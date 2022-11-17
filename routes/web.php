@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +15,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    $user = \App\Models\User::first();
+
+    $start = Carbon::parse($user->lessons()->get()[0]->start)->tz('Europe/Berlin');
+
+    dd($start);
 });

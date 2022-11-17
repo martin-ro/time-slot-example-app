@@ -3,8 +3,17 @@
 namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
+use App\Models\Teacher;
+use App\Models\User;
+use Closure;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Wizard\Step;
+use Filament\Notifications\Notification;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Database\Eloquent\Model;
+use ZepFietje\FilamentDateTimeSlotPicker\DateTimeSlotPicker;
 
 class ListUsers extends ListRecords
 {
@@ -13,7 +22,64 @@ class ListUsers extends ListRecords
     protected function getActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\Action::make('book')
+                ->label('Open Wizard')
+                ->steps([
+                    Step::make('Select user')
+                        ->schema([
+                            Select::make('user')
+                                ->options(User::all()->pluck('name', 'id'))
+                                ->afterStateUpdated(function ($component) {
+                                    $currentStep = $component->getContainer()->getParentComponent();
+                                    $nextStep = $currentStep->getContainer()->getComponents()[1] ?? null;
+                                    $nextStepForm = $nextStep?->getChildComponentContainer();
+                                    // Calling fill() will initialize this part of the form with the correct property
+                                    $nextStepForm?->fill();
+                                })
+                        ]),
+
+                    Step::make('Select date/time')
+                        ->schema([
+                            TextInput::make('name')
+                                ->default(function (Closure $get) {
+                                    if ($get('user')) {
+                                        $name = User::findOrFail($get('user'))->name;
+                                    }
+
+                                    return $name ?? 'No user selected';
+                                }),
+
+                            DateTimeSlotPicker::make('lesson')
+                                ->label('')
+                                ->hintIcon('heroicon-o-clock')
+                                ->hint(__('Based on your timezone (:timezone)', ['timezone' => auth()->user()->timezone]))
+                                ->required()
+                                ->timezone(auth()->user()->timezone)
+                                ->options(function (Closure $get) {
+
+                                    // This does not work
+//                                    if ($get('user')) {
+//                                        $slots = [[now()->addMinutes(30), fake()->uuid]];
+//                                    }
+//
+//                                    return $slots ?? [];
+
+                                    // This works
+                                    return [[now()->addMinutes(30), fake()->uuid]];
+                                }),
+                        ])
+                ])
+                ->modalWidth('xl')
+                ->action(fn(array $data) => [
+                    ray($data),
+
+                    Notification::make('Booked')
+                        ->title('Booked')
+                        ->status('success')
+                        ->body('ID: ' . $data['lesson'][1] . ' Start: ' . $data['lesson'][0])
+                        ->send()
+                ])
+                ->requiresConfirmation()
         ];
     }
 }
