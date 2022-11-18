@@ -31,8 +31,20 @@ class DatabaseSeeder extends Seeder
 //        ]);
 
         Lesson::create([
-            'start' => Carbon::createFromFormat('d/m/Y H:i:s', '10/11/2022 14:00:00'),
-            'end' => Carbon::createFromFormat('d/m/Y H:i:s',  '10/11/2022 14:30:00'),
+            'start' => now()->startOfDay()->addDay()->addHours(8),
+            'end' => now()->startOfDay()->addDay()->addHours(8)->addMinutes(60),
+            'user_id' => $user->id,
+        ]);
+
+        Lesson::create([
+            'start' => now()->startOfDay()->addDay()->addHours(9),
+            'end' => now()->startOfDay()->addDay()->addHours(9)->addMinutes(60),
+            'user_id' => $user->id,
+        ]);
+
+        Lesson::create([
+            'start' => now()->startOfDay()->addDay()->addHours(10),
+            'end' => now()->startOfDay()->addDay()->addHours(10)->addMinutes(60),
             'user_id' => $user->id,
         ]);
     }
