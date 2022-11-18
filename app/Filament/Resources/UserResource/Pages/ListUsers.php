@@ -46,7 +46,7 @@ class ListUsers extends ListRecords
                                         $name = User::findOrFail($get('user'))->name;
                                     }
 
-                                    return $name ?? 'No user selected';
+                                    return $name ?? 'No user selected in previous step';
                                 }),
 
                             Select::make('lesson_select')
@@ -54,13 +54,11 @@ class ListUsers extends ListRecords
                                     if ($get('user')) {
                                         $user = User::findOrFail($get('user'));
 
-                                        $availableSlots = $user
+                                        $slots = $user
                                             ->lessons()
                                             ->pluck('start', 'id');
 
-                                        return $availableSlots;
-
-                                        // $slots = [[now()->addMinutes(30), fake()->uuid]];
+                                        return $slots;
                                     }
 
                                     return $slots ?? [];
