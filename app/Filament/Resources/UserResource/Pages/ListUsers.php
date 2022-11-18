@@ -80,7 +80,7 @@ class ListUsers extends ListRecords
 //                                    if ($get('user')) {
 //                                        $user = User::findOrFail($get('user'));
 //
-//                                        $availableSlots = $user
+//                                        $slots = $user
 //                                            ->lessons()
 //                                            ->get()
 //                                            ->map(function ($item) {
@@ -88,10 +88,10 @@ class ListUsers extends ListRecords
 //                                            })
 //                                            ->toArray();
 //
-//                                        return $availableSlots;
 //                                    }
 //
 //                                    return $slots ?? [];
+
 
                                     /**
                                      * This also does not work which is strange, the only
@@ -107,7 +107,8 @@ class ListUsers extends ListRecords
                                     /**
                                      * This works
                                      */
-                                    return [[now()->addMinutes(30), fake()->uuid]];
+                                    $slots = [[now()->addMinutes(30), fake()->uuid]];
+                                    return $slots ?? [];
                                 }),
                         ])
                 ])
