@@ -58,11 +58,9 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-
                 Tables\Actions\Action::make('book')
+                    ->icon('heroicon-s-plus')
                     ->form([
-
                         DateTimeSlotPicker::make('lesson')
                             ->hintIcon('heroicon-o-clock')
                             ->hint(__('Based on your timezone (:timezone)', ['timezone' => auth()->user()->timezone]))

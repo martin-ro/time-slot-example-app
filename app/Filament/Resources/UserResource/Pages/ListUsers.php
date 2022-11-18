@@ -49,6 +49,23 @@ class ListUsers extends ListRecords
                                     return $name ?? 'No user selected';
                                 }),
 
+                            Select::make('lesson_select')
+                                ->options(function (Closure $get) {
+                                    if ($get('user')) {
+                                        $user = User::findOrFail($get('user'));
+
+                                        $availableSlots = $user
+                                            ->lessons()
+                                            ->pluck('start', 'id');
+
+                                        return $availableSlots;
+
+                                        // $slots = [[now()->addMinutes(30), fake()->uuid]];
+                                    }
+
+                                    return $slots ?? [];
+                                }),
+
                             DateTimeSlotPicker::make('lesson')
                                 ->label('')
                                 ->hintIcon('heroicon-o-clock')
@@ -57,14 +74,39 @@ class ListUsers extends ListRecords
                                 ->timezone(auth()->user()->timezone)
                                 ->options(function (Closure $get) {
 
-                                    // This does not work
+                                    /**
+                                     * This does not work
+                                     */
 //                                    if ($get('user')) {
-//                                        $slots = [[now()->addMinutes(30), fake()->uuid]];
+//                                        $user = User::findOrFail($get('user'));
+//
+//                                        $availableSlots = $user
+//                                            ->lessons()
+//                                            ->get()
+//                                            ->map(function ($item) {
+//                                                return [$item['start'], $item['id']];
+//                                            })
+//                                            ->toArray();
+//
+//                                        return $availableSlots;
 //                                    }
 //
 //                                    return $slots ?? [];
 
-                                    // This works
+                                    /**
+                                     * This also does not work which is strange, the only
+                                     * difference to the working example below is the `if ($get('user'))`
+                                     * check.
+                                     */
+//                                    if ($get('user')) {
+//                                      $slots = [[now()->addMinutes(30), fake()->uuid]];
+//                                    }
+//
+//                                    return $slots ?? [];
+
+                                    /**
+                                     * This works
+                                     */
                                     return [[now()->addMinutes(30), fake()->uuid]];
                                 }),
                         ])
